@@ -1,0 +1,225 @@
+# =============================================================================
+# Configuration par Défaut - Analyse de Soudure
+# =============================================================================
+# Ce fichier contient la configuration par défaut pour le pipeline
+# d'analyse de soudure. Vous pouvez le modifier ou créer des
+# configurations personnalisées pour différents cas d'usage.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Configuration Générale
+# -----------------------------------------------------------------------------
+general:
+  # Appareil de calcul: "cuda", "cpu", ou "auto"
+  device: "auto"
+  
+  # Nombre de workers pour le chargement des données
+  num_workers: 4
+  
+  # Graine aléatoire pour la reproductibilité
+  random_seed: 42
+  
+  # Niveau de logging: DEBUG, INFO, WARNING, ERROR
+  log_level: "INFO"
+
+# -----------------------------------------------------------------------------
+# Prétraitement des Images
+# -----------------------------------------------------------------------------
+preprocessing:
+  # Taille des images pour le modèle (height, width)
+  image_size: [256, 256]
+  
+  # Conversion en niveaux de gris
+  grayscale: true
+  
+  # Normalisation des pixels
+  normalize: true
+  
+  # Statistiques de normalisation
+  mean: 0.449
+  std: 0.226
+  
+  # Amélioration du contraste avec CLAHE
+  apply_clahe: true
+  clahe_clip_limit: 2.0
+  clahe_tile_size: [8, 8]
+  
+  # Réduction du bruit
+  denoise: true
+  denoise_strength: 9
+
+# -----------------------------------------------------------------------------
+# Modèle de Segmentation (U-Net)
+# -----------------------------------------------------------------------------
+segmentation:
+  # Architecture
+  model_type: "unet"
+  
+  # Nombre de canaux d'entrée (1 pour niveaux de gris)
+  in_channels: 1
+  
+  # Nombre de classes de sortie (1 pour binaire)
+  out_channels: 1
+  
+  # Nombre de caractéristiques de base
+  base_features: 64
+  
+  # Utiliser l'interpolation bilinéaire pour le upsampling
+  bilinear: true
+  
+  # Seuil de binarisation pour la prédiction
+  threshold: 0.5
+  
+  # Surface minimale pour une zone de soudure valide (pixels)
+  min_weld_area: 100
+
+# -----------------------------------------------------------------------------
+# Modèle de Classification (CNN)
+# -----------------------------------------------------------------------------
+classification:
+  # Nombre de classes d'homogénéité
+  # 0: Non homogène, 1: Partiellement homogène, 2: Homogène
+  num_classes: 3
+  
+  # Taille des patches pour la classification
+  patch_size: [64, 64]
+  
+  # Stride pour l'extraction des patches
+  patch_stride: [32, 32]
+  
+  # Taux de dropout
+  dropout: 0.3
+
+# -----------------------------------------------------------------------------
+# Entraînement
+# -----------------------------------------------------------------------------
+training:
+  # Nombre d'epochs
+  epochs: 100
+  
+  # Taille des batchs
+  batch_size: 8
+  
+  # Taux d'apprentissage initial
+  learning_rate: 0.0001
+  
+  # Weight decay (L2 regularization)
+  weight_decay: 0.0001
+  
+  # Optimiseur: "adam", "adamw", "sgd"
+  optimizer: "adamw"
+  
+  # Scheduler de learning rate
+  scheduler:
+    type: "reduce_on_plateau"
+    factor: 0.5
+    patience: 5
+    min_lr: 0.000001
+  
+  # Early stopping
+  early_stopping:
+    enabled: true
+    patience: 15
+    min_delta: 0.0001
+  
+  # Loss function
+  loss:
+    type: "combined"  # "bce", "dice", "combined"
+    bce_weight: 0.5
+    dice_weight: 0.5
+  
+  # Augmentation de données
+  augmentation:
+    enabled: true
+    p_geometric: 0.7
+    p_photometric: 0.5
+    p_industrial: 0.3
+
+# -----------------------------------------------------------------------------
+# Analyse de Qualité
+# -----------------------------------------------------------------------------
+analysis:
+  # Résolution de l'image (pixels par millimètre)
+  pixels_per_mm: 10.0
+  
+  # Critères de qualité
+  quality_criteria:
+    # Tolérance sur la variation de largeur (coefficient de variation max)
+    width_tolerance: 0.2
+    
+    # Score de continuité minimum
+    min_continuity: 0.85
+    
+    # Score d'homogénéité minimum
+    min_homogeneity: 0.70
+    
+    # Ratio maximum de zones défectueuses
+    max_defect_ratio: 0.05
+    
+    # Nombre maximum d'interruptions
+    max_gaps: 2
+  
+  # Seuils de notation
+  grade_thresholds:
+    A: 0.90  # 90% et plus
+    B: 0.80  # 80-89%
+    C: 0.70  # 70-79%
+    D: 0.60  # 60-69%
+    F: 0.00  # Moins de 60%
+
+# -----------------------------------------------------------------------------
+# Traitement Vidéo
+# -----------------------------------------------------------------------------
+video:
+  # Intervalle entre les frames analysées (secondes)
+  frame_interval: 1.0
+  
+  # Nombre maximum de frames à analyser (null = toutes)
+  max_frames: null
+  
+  # Taille du buffer pour le suivi temporel
+  buffer_size: 10
+  
+  # Seuil de détection d'événement de soudure
+  event_threshold: 0.1
+  
+  # Durée minimale d'un événement (secondes)
+  min_event_duration: 0.5
+
+# -----------------------------------------------------------------------------
+# Sortie
+# -----------------------------------------------------------------------------
+output:
+  # Répertoire de sortie par défaut
+  directory: "./outputs"
+  
+  # Sauvegarder les masques de segmentation
+  save_masks: true
+  
+  # Sauvegarder les visualisations
+  save_visualizations: true
+  
+  # Format des images de sortie
+  image_format: "png"
+  
+  # Qualité JPEG (si applicable)
+  jpeg_quality: 95
+  
+  # Générer des rapports JSON
+  generate_json: true
+  
+  # Générer des rapports textuels
+  generate_text_report: true
+
+# -----------------------------------------------------------------------------
+# Métadonnées Caméra (valeurs par défaut)
+# -----------------------------------------------------------------------------
+camera:
+  # Angle de la caméra (90 = perpendiculaire à la surface)
+  default_angle: 90.0
+  
+  # Résolution par défaut (pixels/mm)
+  default_resolution: 10.0
+  
+  # Coefficients de distortion (null = pas de correction)
+  distortion_coefficients: null

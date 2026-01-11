@@ -1,0 +1,43 @@
+# =============================================================================
+# Projet: Segmentation et Analyse de Zones de Soudure
+# =============================================================================
+# Ce fichier contient toutes les dépendances nécessaires pour le projet.
+# Installation: pip install -r requirements.txt
+# =============================================================================
+
+# Framework de Deep Learning - PyTorch
+# Utilisé pour l'implémentation des modèles U-Net et CNN
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Traitement d'images
+# OpenCV pour le traitement vidéo et les opérations sur images
+opencv-python>=4.8.0
+# Pillow pour les manipulations d'images de base
+Pillow>=10.0.0
+# Scikit-image pour les algorithmes de traitement d'images avancés
+scikit-image>=0.21.0
+
+# Calcul scientifique
+numpy>=1.24.0
+scipy>=1.11.0
+
+# Visualisation et analyse
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Utilitaires de machine learning
+scikit-learn>=1.3.0
+
+# Gestion des données et configuration
+pyyaml>=6.0
+tqdm>=4.65.0
+
+# Augmentation de données pour l'entraînement
+albumentations>=1.3.0
+
+# Logging et monitoring
+tensorboard>=2.14.0
+
+# Tests et qualité du code
+pytest>=7.4.0
